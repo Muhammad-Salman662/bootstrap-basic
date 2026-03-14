@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Nunito', sans-serif;
+        }
+        .navbar {
+            background-color: #f8f9fa;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            height: 56px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .navbar-brand {
+            color: #212529 !important;
+            font-weight: 700;
+        }
+        .navbar .nav-link {
+            color: #212529 !important;
+        }
+        .navbar .nav-link:hover {
+            color: #007bff !important;
+        }
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #ffffff;
+        }
+        .search-input {
+            padding-right: 40px;
+        }
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+        #mobileSearchWrapper {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            z-index: 1029;
+        }
+        .icon-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 250px;
+            height: calc(100vh - 56px);
+            background-color: #ffffff;
+            border-right: 1px solid #e9ecef;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        @media (min-width: 768px) {
+            #desktopSidebar:not(.show) {
+                transform: translateX(-250px);
+            }
+            #desktopSidebar {
+                display: block !important;
+                transition: transform 0.3s ease;
+            }
+        }
+        @media (max-width: 767.98px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .navbar-hide-mobile {
+                display: none !important;
+            }
+        }
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-nav .nav-item {
+            border-bottom: 1px solid #e9ecef;
+        }
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: background-color 0.2s;
+            font-size: 0.8rem;
+        }
+        .sidebar-nav .nav-link:hover {
+            color: #007bff;
+        }
+        .sidebar-nav .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+        .sidebar-nav .collapse {
+            background-color: #f8f9fa;
+        }
+        .sidebar-nav .collapse .nav-link {
+            padding-left: 2rem;
+            font-size: 0.75rem;
+        }
+        .sidebar-nav .collapse .collapse .nav-link {
+            padding-left: 3rem;
+            font-size: 0.72rem;
+        }
+        .sidebar-nav .collapse .collapse .collapse .nav-link {
+            padding-left: 4rem;
+            font-size: 0.70rem;
+        }
+        .sidebar-section {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            color: #adb5bd;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .sidebar-nav .nav-link .side-chevron {
+            margin-left: auto;
+            margin-right: 0;
+            width: auto;
+            transition: transform 0.2s ease;
+        }
+        .sidebar-nav .nav-link[aria-expanded="true"] .side-chevron {
+            transform: rotate(90deg);
+        }
+        .docs-chevron {
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+        #docsDropdown[aria-expanded="true"] .docs-chevron {
+            transform: rotate(90deg);
+        }
+        .docs-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1rem;
+            text-decoration: none;
+            color: #212529;
+            transition: background 0.15s;
+        }
+        .docs-dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+        .docs-dropdown-item:hover .docs-item-icon {
+            color: #007bff;
+        }
+        .docs-item-icon {
+            font-size: 1.05rem;
+            color: #6c757d;
+            flex-shrink: 0;
+            width: 18px;
+            text-align: center;
+            transition: color 0.15s;
+        }
+        .docs-item-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+        .docs-item-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+        .docs-item-sub {
+            font-size: 0.70rem;
+            color: #adb5bd;
+            margin-top: 1px;
+        }
+        .dropdown-header-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 4px 4px 0 0;
+        }
+        .dropdown-header-bar i {
+            font-size: 0.85rem;
+        }
+        .dropdown-msg-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #fff;
+            background-color: #007bff;
+            border-radius: 4px 4px 0 0;
+        }
+        .msg-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.6rem 1rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        .msg-row:hover {
+            background: #f8f9fa;
+        }
+        .msg-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .msg-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .msg-name {
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: #212529;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .msg-sub {
+            font-size: 0.72rem;
+            color: #6c757d;
+        }
+        .user-dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .user-dropdown-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #6c757d;
+            flex-shrink: 0;
+        }
+        .user-dropdown-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #212529;
+        }
+        .user-dropdown-role {
+            font-size: 0.72rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="container-fluid px-4 d-flex align-items-center">
+
+            <button class="btn btn-outline-secondary me-3 flex-shrink-0 d-none d-md-inline-flex"
+                type="button" data-bs-toggle="collapse"
+                data-bs-target="#desktopSidebar" aria-controls="desktopSidebar" aria-expanded="true">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <button class="btn btn-outline-secondary me-3 flex-shrink-0 d-md-none"
+                type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <a class="navbar-brand flex-shrink-0" href="#">SB Admin Pro</a>
+
+            <div class="d-none d-lg-inline-block form-inline ms-3">
+                <div class="input-group position-relative">
+                    <input class="form-control search-input" type="text" placeholder="Search for..." aria-label="Search for...">
+                    <i class="bi bi-search search-icon"></i>
+                </div>
+            </div>
+
+            <a class="nav-link d-lg-none px-2" href="#"
+               data-bs-toggle="collapse" data-bs-target="#mobileSearchWrapper"
+               aria-controls="mobileSearchWrapper" aria-expanded="false">
+                <i class="bi bi-search" style="color:#212529;"></i>
+            </a>
+
+            <div class="flex-grow-1"></div>
+
+            <ul class="navbar-nav d-flex flex-row align-items-center">
+
+                <li class="nav-item dropdown navbar-hide-mobile">
+                    <a class="nav-link" id="docsDropdown" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Documentation <i class="bi bi-chevron-right docs-chevron"></i>
+                    </a>
+                    <ul class="dropdown-menu p-0" aria-labelledby="docsDropdown" style="min-width:240px;">
+                        <li>
+                            <a class="docs-dropdown-item" href="#">
+                                <i class="bi bi-book docs-item-icon"></i>
+                                <div class="docs-item-text">
+                                    <span class="docs-item-label">Documentation</span>
+                                    <span class="docs-item-sub">Usage Instructions and Reference</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li>
+                            <a class="docs-dropdown-item" href="#">
+                                <i class="bi bi-code docs-item-icon"></i>
+                                <div class="docs-item-text">
+                                    <span class="docs-item-label">Components</span>
+                                    <span class="docs-item-sub">Code Snippets and Reference</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li>
+                            <a class="docs-dropdown-item" href="#">
+                                <i class="bi bi-file-text docs-item-icon"></i>
+                                <div class="docs-item-text">
+                                    <span class="docs-item-label">Changelog</span>
+                                    <span class="docs-item-sub">Updates and Changes</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown navbar-hide-mobile">
+                    <a class="nav-link dropdown-toggle" id="alertsDropdown" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="alertsDropdown" style="min-width:300px;">
+                        <li>
+                            <div class="dropdown-header-bar">
+                                <i class="bi bi-bell-fill"></i> Alert Centre
+                            </div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-start py-2 px-3" href="#">
+                                <div class="me-3 mt-1">
+                                    <div class="icon-circle bg-warning">
+                                        <i class="bi bi-activity text-white" style="font-size:0.85rem;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">December 21, 2025</div>
+                                    <div style="font-size:0.82rem;">This is an alert message</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-start py-2 px-3" href="#">
+                                <div class="me-3 mt-1">
+                                    <div class="icon-circle bg-primary">
+                                        <i class="bi bi-bar-chart-fill text-white" style="font-size:0.85rem;"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">December 22, 2025</div>
+                                    <div style="font-size:0.82rem;">New chart report available</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li><a class="dropdown-item text-center small text-muted py-2" href="#">Show All Alerts</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown navbar-hide-mobile">
+                    <a class="nav-link dropdown-toggle" id="messagesDropdown" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="messagesDropdown" style="min-width:300px;">
+                        <li>
+                            <div class="dropdown-msg-header">
+                                <i class="bi bi-envelope-fill"></i> Message Centre
+                            </div>
+                        </li>
+                        <li>
+                            <a class="msg-row" href="#">
+                                <div class="msg-avatar"><i class="bi bi-person"></i></div>
+                                <div class="msg-body">
+                                    <div class="msg-name">Salman</div>
+                                    <div class="msg-sub">hy it's me salman....</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li>
+                            <a class="msg-row" href="#">
+                                <div class="msg-avatar"><i class="bi bi-file-earmark"></i></div>
+                                <div class="msg-body">
+                                    <div class="msg-name">Ahmad</div>
+                                    <div class="msg-sub">hy it's me ahmad....</div>
+                                </div>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li><a class="dropdown-item text-center small text-muted py-2" href="#">Read More Messages</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link" id="userDropdown" href="#" role="button" data-bs-toggle="dropdown">
+                        <div class="user-dropdown-avatar"><i class="bi bi-person"></i></div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-0" style="min-width:200px;">
+                        <li>
+                            <div class="user-dropdown-header">
+                                <div class="user-dropdown-avatar"><i class="bi bi-person"></i></div>
+                                <div>
+                                    <div class="user-dropdown-name">Salman</div>
+                                    <div class="user-dropdown-role">salman@gmail.com</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="bi bi-gear me-2"></i>Account</a></li>
+                        <li><hr class="dropdown-divider my-0"></li>
+                        <li><a class="dropdown-item py-2" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <div class="collapse" id="mobileSearchWrapper">
+        <div class="input-group position-relative">
+            <input class="form-control search-input" type="text" placeholder="Search for..." aria-label="Search for...">
+            <i class="bi bi-search search-icon"></i>
+        </div>
+    </div>
+
+    <div class="sidebar collapse show d-none d-md-block" id="desktopSidebar">
+        <ul class="sidebar-nav">
+            <li class="sidebar-section">Core</li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#dashboardMenu" aria-expanded="false">
+                    <i class="bi bi-activity"></i> Dashboard <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="dashboardMenu">
+                    <a class="nav-link" href="#">Default</a>
+                    <a class="nav-link" href="#">Multipurpose</a>
+                    <a class="nav-link" href="#">Affiliate</a>
+                </div>
+            </li>
+            <li class="sidebar-section">Custom</li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#pagesMenu" aria-expanded="false">
+                    <i class="bi bi-grid"></i> Pages <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="pagesMenu">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#accountsSubMenu" aria-expanded="false">Accounts <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="accountsSubMenu">
+                        <a class="nav-link" href="#">Profile</a>
+                        <a class="nav-link" href="#">Billing</a>
+                        <a class="nav-link" href="#">Security</a>
+                        <a class="nav-link" href="#">Notification</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#authenticationSubMenu" aria-expanded="false">Authentication <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="authenticationSubMenu">
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#authBasicSubMenu" aria-expanded="false">Basic <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="authBasicSubMenu">
+                            <a class="nav-link" href="#">Login</a>
+                            <a class="nav-link" href="#">Register</a>
+                            <a class="nav-link" href="#">Forgot Password</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#authSocialSubMenu" aria-expanded="false">Social <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="authSocialSubMenu">
+                            <a class="nav-link" href="#">Login</a>
+                            <a class="nav-link" href="#">Register</a>
+                            <a class="nav-link" href="#">Forgot Password</a>
+                        </div>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#errorsSubMenu" aria-expanded="false">Errors <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="errorsSubMenu">
+                        <a class="nav-link" href="#">400 Error</a>
+                        <a class="nav-link" href="#">401 Error</a>
+                        <a class="nav-link" href="#">404 Error 1</a>
+                        <a class="nav-link" href="#">404 Error 2</a>
+                        <a class="nav-link" href="#">404 Error 3</a>
+                        <a class="nav-link" href="#">500 Error</a>
+                        <a class="nav-link" href="#">503 Error</a>
+                        <a class="nav-link" href="#">504 Error</a>
+                    </div>
+                    <a class="nav-link" href="#">Pricing</a>
+                    <a class="nav-link" href="#">Invoice</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#applicationMenu" aria-expanded="false">
+                    <i class="bi bi-globe"></i> Application <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="applicationMenu">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#knowledgebaseSubMenu" aria-expanded="false">Knowledgebase <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="knowledgebaseSubMenu">
+                        <a class="nav-link" href="#">Home 1</a>
+                        <a class="nav-link" href="#">Home 2</a>
+                        <a class="nav-link" href="#">Category</a>
+                        <a class="nav-link" href="#">Article</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#userMgmtSubMenu" aria-expanded="false">User Management <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="userMgmtSubMenu">
+                        <a class="nav-link" href="#">User List</a>
+                        <a class="nav-link" href="#">Edit User</a>
+                        <a class="nav-link" href="#">Add User</a>
+                        <a class="nav-link" href="#">Groups List</a>
+                        <a class="nav-link" href="#">Organization Details</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#postMgmtSubMenu" aria-expanded="false">Posts Management <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="postMgmtSubMenu">
+                        <a class="nav-link" href="#">Post List</a>
+                        <a class="nav-link" href="#">Create Post</a>
+                        <a class="nav-link" href="#">Edit Post</a>
+                        <a class="nav-link" href="#">Posts Admin</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#flowsMenu" aria-expanded="false">
+                    <i class="bi bi-arrow-repeat"></i> Flows <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="flowsMenu">
+                    <a class="nav-link" href="#">Multi-Tenant Registration</a>
+                    <a class="nav-link" href="#">Wizard</a>
+                </div>
+            </li>
+            <li class="sidebar-section">UI Outlook</li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#layoutMenu" aria-expanded="false">
+                    <i class="bi bi-layout-text-window"></i> Layout <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="layoutMenu">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#navigationSubMenu" aria-expanded="false">Navigation <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="navigationSubMenu">
+                        <a class="nav-link" href="#">Static Sidenav</a>
+                        <a class="nav-link" href="#">Dark Sidenav</a>
+                        <a class="nav-link" href="#">RTL Layout</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#containerSubMenu" aria-expanded="false">Container Options <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="containerSubMenu">
+                        <a class="nav-link" href="#">Boxed Layout</a>
+                        <a class="nav-link" href="#">Fluid Layout</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#pageHeaderSubMenu" aria-expanded="false">Page Headers <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="pageHeaderSubMenu">
+                        <a class="nav-link" href="#">Simplified</a>
+                        <a class="nav-link" href="#">Compact</a>
+                        <a class="nav-link" href="#">Content Overlap</a>
+                        <a class="nav-link" href="#">Bread Crumbs</a>
+                        <a class="nav-link" href="#">Light</a>
+                    </div>
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#starterSubMenu" aria-expanded="false">Starter Layouts <i class="bi bi-chevron-right side-chevron"></i></a>
+                    <div class="collapse" id="starterSubMenu">
+                        <a class="nav-link" href="#">Default</a>
+                        <a class="nav-link" href="#">Minimal</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#componentsMenu" aria-expanded="false">
+                    <i class="bi bi-box"></i> Components <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="componentsMenu">
+                    <a class="nav-link" href="#">Alerts</a>
+                    <a class="nav-link" href="#">Avatars</a>
+                    <a class="nav-link" href="#">Badges</a>
+                    <a class="nav-link" href="#">Buttons</a>
+                    <a class="nav-link" href="#">Cards</a>
+                    <a class="nav-link" href="#">Dropdowns</a>
+                    <a class="nav-link" href="#">Forms</a>
+                    <a class="nav-link" href="#">Modals</a>
+                    <a class="nav-link" href="#">Navigation</a>
+                    <a class="nav-link" href="#">Progress</a>
+                    <a class="nav-link" href="#">Steps</a>
+                    <a class="nav-link" href="#">Time Line</a>
+                    <a class="nav-link" href="#">Toasts</a>
+                    <a class="nav-link" href="#">Tooltips</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#utilitiesMenu" aria-expanded="false">
+                    <i class="bi bi-wrench"></i> Utilities <i class="bi bi-chevron-right side-chevron"></i>
+                </a>
+                <div class="collapse" id="utilitiesMenu">
+                    <a class="nav-link" href="#">Animations</a>
+                    <a class="nav-link" href="#">Background</a>
+                    <a class="nav-link" href="#">Borders</a>
+                    <a class="nav-link" href="#">Lift Shadows</a>
+                    <a class="nav-link" href="#">Typography</a>
+                </div>
+            </li>
+            <li class="sidebar-section">Plugins</li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bar-chart-fill"></i> Charts</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-funnel"></i> Tables</a></li>
+        </ul>
+    </div>
+
+    <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="mobileSidebar"
+         style="width:250px; top:56px; height:calc(100vh - 56px);">
+        <div class="offcanvas-body p-0" style="overflow-y:auto;">
+            <ul class="sidebar-nav">
+                <li class="sidebar-section">Account</li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bell"></i> Notifications</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-envelope"></i> Messages</a></li>
+                <li class="sidebar-section">Core</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mDashboardMenu" aria-expanded="false">
+                        <i class="bi bi-activity"></i> Dashboard <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mDashboardMenu">
+                        <a class="nav-link" href="#">Default</a>
+                        <a class="nav-link" href="#">Multipurpose</a>
+                        <a class="nav-link" href="#">Affiliate</a>
+                    </div>
+                </li>
+                <li class="sidebar-section">Custom</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mPagesMenu" aria-expanded="false">
+                        <i class="bi bi-grid"></i> Pages <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mPagesMenu">
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mAccountsSubMenu" aria-expanded="false">Accounts <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mAccountsSubMenu">
+                            <a class="nav-link" href="#">Profile</a>
+                            <a class="nav-link" href="#">Billing</a>
+                            <a class="nav-link" href="#">Security</a>
+                            <a class="nav-link" href="#">Notification</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mAuthSubMenu" aria-expanded="false">Authentication <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mAuthSubMenu">
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mAuthBasicSubMenu" aria-expanded="false">Basic <i class="bi bi-chevron-right side-chevron"></i></a>
+                            <div class="collapse" id="mAuthBasicSubMenu">
+                                <a class="nav-link" href="#">Login</a>
+                                <a class="nav-link" href="#">Register</a>
+                                <a class="nav-link" href="#">Forgot Password</a>
+                            </div>
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mAuthSocialSubMenu" aria-expanded="false">Social <i class="bi bi-chevron-right side-chevron"></i></a>
+                            <div class="collapse" id="mAuthSocialSubMenu">
+                                <a class="nav-link" href="#">Login</a>
+                                <a class="nav-link" href="#">Register</a>
+                                <a class="nav-link" href="#">Forgot Password</a>
+                            </div>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mErrorsSubMenu" aria-expanded="false">Errors <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mErrorsSubMenu">
+                            <a class="nav-link" href="#">400 Error</a>
+                            <a class="nav-link" href="#">401 Error</a>
+                            <a class="nav-link" href="#">404 Error 1</a>
+                            <a class="nav-link" href="#">500 Error</a>
+                        </div>
+                        <a class="nav-link" href="#">Pricing</a>
+                        <a class="nav-link" href="#">Invoice</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mApplicationMenu" aria-expanded="false">
+                        <i class="bi bi-globe"></i> Application <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mApplicationMenu">
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mKnowledgebaseSubMenu" aria-expanded="false">Knowledgebase <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mKnowledgebaseSubMenu">
+                            <a class="nav-link" href="#">Home 1</a>
+                            <a class="nav-link" href="#">Home 2</a>
+                            <a class="nav-link" href="#">Category</a>
+                            <a class="nav-link" href="#">Article</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mUserMgmtSubMenu" aria-expanded="false">User Management <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mUserMgmtSubMenu">
+                            <a class="nav-link" href="#">User List</a>
+                            <a class="nav-link" href="#">Edit User</a>
+                            <a class="nav-link" href="#">Add User</a>
+                            <a class="nav-link" href="#">Groups List</a>
+                            <a class="nav-link" href="#">Organization Details</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mPostMgmtSubMenu" aria-expanded="false">Posts Management <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mPostMgmtSubMenu">
+                            <a class="nav-link" href="#">Post List</a>
+                            <a class="nav-link" href="#">Create Post</a>
+                            <a class="nav-link" href="#">Edit Post</a>
+                            <a class="nav-link" href="#">Posts Admin</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mFlowsMenu" aria-expanded="false">
+                        <i class="bi bi-arrow-repeat"></i> Flows <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mFlowsMenu">
+                        <a class="nav-link" href="#">Multi-Tenant Registration</a>
+                        <a class="nav-link" href="#">Wizard</a>
+                    </div>
+                </li>
+                <li class="sidebar-section">UI Outlook</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mLayoutMenu" aria-expanded="false">
+                        <i class="bi bi-layout-text-window"></i> Layout <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mLayoutMenu">
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mNavigationSubMenu" aria-expanded="false">Navigation <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mNavigationSubMenu">
+                            <a class="nav-link" href="#">Static Sidenav</a>
+                            <a class="nav-link" href="#">Dark Sidenav</a>
+                            <a class="nav-link" href="#">RTL Layout</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mContainerSubMenu" aria-expanded="false">Container Options <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mContainerSubMenu">
+                            <a class="nav-link" href="#">Boxed Layout</a>
+                            <a class="nav-link" href="#">Fluid Layout</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mPageHeaderSubMenu" aria-expanded="false">Page Headers <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mPageHeaderSubMenu">
+                            <a class="nav-link" href="#">Simplified</a>
+                            <a class="nav-link" href="#">Compact</a>
+                            <a class="nav-link" href="#">Content Overlap</a>
+                            <a class="nav-link" href="#">Bread Crumbs</a>
+                            <a class="nav-link" href="#">Light</a>
+                        </div>
+                        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mStarterSubMenu" aria-expanded="false">Starter Layouts <i class="bi bi-chevron-right side-chevron"></i></a>
+                        <div class="collapse" id="mStarterSubMenu">
+                            <a class="nav-link" href="#">Default</a>
+                            <a class="nav-link" href="#">Minimal</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mComponentsMenu" aria-expanded="false">
+                        <i class="bi bi-box"></i> Components <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mComponentsMenu">
+                        <a class="nav-link" href="#">Alerts</a>
+                        <a class="nav-link" href="#">Avatars</a>
+                        <a class="nav-link" href="#">Badges</a>
+                        <a class="nav-link" href="#">Buttons</a>
+                        <a class="nav-link" href="#">Cards</a>
+                        <a class="nav-link" href="#">Dropdowns</a>
+                        <a class="nav-link" href="#">Forms</a>
+                        <a class="nav-link" href="#">Modals</a>
+                        <a class="nav-link" href="#">Navigation</a>
+                        <a class="nav-link" href="#">Progress</a>
+                        <a class="nav-link" href="#">Steps</a>
+                        <a class="nav-link" href="#">Time Line</a>
+                        <a class="nav-link" href="#">Toasts</a>
+                        <a class="nav-link" href="#">Tooltips</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mUtilitiesMenu" aria-expanded="false">
+                        <i class="bi bi-wrench"></i> Utilities <i class="bi bi-chevron-right side-chevron"></i>
+                    </a>
+                    <div class="collapse" id="mUtilitiesMenu">
+                        <a class="nav-link" href="#">Animations</a>
+                        <a class="nav-link" href="#">Background</a>
+                        <a class="nav-link" href="#">Borders</a>
+                        <a class="nav-link" href="#">Lift Shadows</a>
+                        <a class="nav-link" href="#">Typography</a>
+                    </div>
+                </li>
+                <li class="sidebar-section">Plugins</li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-bar-chart-fill"></i> Charts</a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><i class="bi bi-funnel"></i> Tables</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
